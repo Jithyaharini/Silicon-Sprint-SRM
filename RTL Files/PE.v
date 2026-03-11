@@ -20,8 +20,6 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 // Low-power Processing Element with clock gating for zero detection
-`timescale 1ns / 1ps
-// Low-power Processing Element with clock gating for zero detection
 module PE(
 input clk,
 input rst,
