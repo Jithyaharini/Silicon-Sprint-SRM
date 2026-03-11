@@ -1,25 +1,4 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 11.03.2026 12:46:28
-// Design Name: 
-// Module Name: systolic_array_4x4
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
-
-// 4x4 Systolic Array with Power Optimization
 module systolic_array_4x4(
     input clk,
     input rst,
@@ -42,7 +21,8 @@ module systolic_array_4x4(
 
 wire [7:0] A[0:3][0:3];
 wire [7:0] B[0:3][0:3];
-wire [31:0] sum[0:3][0:3][0:4];
+wire [31:0] sum[0:3][0:3];
+
 
 // Assign matrix inputs
 assign A[0][0]=A00; assign A[0][1]=A01; assign A[0][2]=A02; assign A[0][3]=A03;
@@ -55,36 +35,54 @@ assign B[1][0]=B10; assign B[1][1]=B11; assign B[1][2]=B12; assign B[1][3]=B13;
 assign B[2][0]=B20; assign B[2][1]=B21; assign B[2][2]=B22; assign B[2][3]=B23;
 assign B[3][0]=B30; assign B[3][1]=B31; assign B[3][2]=B32; assign B[3][3]=B33;
 
-genvar i,j,k;
+
+genvar i,j;
 
 generate
 for(i=0;i<4;i=i+1) begin: row
     for(j=0;j<4;j=j+1) begin: col
 
-        assign sum[i][j][0] = 0;
+        PE pe_inst(
+            .clk(clk),
+            .rst(rst),
 
-        for(k=0;k<4;k=k+1) begin: stage
+            .a0(A[i][0]),
+            .a1(A[i][1]),
+            .a2(A[i][2]),
+            .a3(A[i][3]),
 
-            PE pe_inst(
-                .clk(clk),
-                .rst(rst),
-                .a(A[i][k]),
-                .b(B[k][j]),
-                .sum_in(sum[i][j][k]),
-                .sum_out(sum[i][j][k+1])
-            );
+            .b0(B[0][j]),
+            .b1(B[1][j]),
+            .b2(B[2][j]),
+            .b3(B[3][j]),
 
-        end
+            .sum(sum[i][j])
+        );
 
     end
 end
 endgenerate
 
-// Output assignment
-assign C00=sum[0][0][4]; assign C01=sum[0][1][4]; assign C02=sum[0][2][4]; assign C03=sum[0][3][4];
-assign C10=sum[1][0][4]; assign C11=sum[1][1][4]; assign C12=sum[1][2][4]; assign C13=sum[1][3][4];
-assign C20=sum[2][0][4]; assign C21=sum[2][1][4]; assign C22=sum[2][2][4]; assign C23=sum[2][3][4];
-assign C30=sum[3][0][4]; assign C31=sum[3][1][4]; assign C32=sum[3][2][4]; assign C33=sum[3][3][4];
+
+assign C00=sum[0][0];
+assign C01=sum[0][1];
+assign C02=sum[0][2];
+assign C03=sum[0][3];
+
+assign C10=sum[1][0];
+assign C11=sum[1][1];
+assign C12=sum[1][2];
+assign C13=sum[1][3];
+
+assign C20=sum[2][0];
+assign C21=sum[2][1];
+assign C22=sum[2][2];
+assign C23=sum[2][3];
+
+assign C30=sum[3][0];
+assign C31=sum[3][1];
+assign C32=sum[3][2];
+assign C33=sum[3][3];
 
 endmodule
 
