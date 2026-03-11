@@ -20,6 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 // Self-checking Testbench for 4x4 Systolic Array
+`timescale 1ns / 1ps
 
 module tb;
 
@@ -46,7 +47,7 @@ reg [7:0] B [0:3][0:3];
 reg [31:0] C_exp [0:3][0:3];
 
 integer i,j,k;
-integer errors=0;
+integer errors;
 
 systolic_array_4x4 uut(
 
@@ -73,24 +74,13 @@ systolic_array_4x4 uut(
 initial clk=0;
 always #5 clk=~clk;
 
-initial begin
+////////////////////////////////////////////////////////////
+// STORE MATRICES INTO ARRAYS
+////////////////////////////////////////////////////////////
 
-rst=1;
-#10 rst=0;
+task store_matrices;
+begin
 
-// Matrix A
-A00 = 8'd1; A01 = 8'd0; A02 = 8'd0; A03 = 8'd4;
-A10 = 8'd5; A11 = 8'd6; A12 = 8'd0; A13 = 8'd0;
-A20 = 8'd0; A21 = 8'd1; A22 = 8'd2; A23 = 8'd3;
-A30 = 8'd0; A31 = 8'd5; A32 = 8'd0; A33 = 8'd0;
-
-// Matrix B
-B00 = 8'd1; B01 = 8'd2; B02 = 8'd0; B03 = 8'd0;
-B10 = 8'd0; B11 = 8'd6; B12 = 8'd0; B13 = 8'd8;
-B20 = 8'd9; B21 = 8'd0; B22 = 8'd2; B23 = 8'd0;
-B30 = 8'd0; B31 = 8'd5; B32 = 8'd0; B33 = 8'd7;
-
-// Store matrices in arrays
 A[0][0]=A00; A[0][1]=A01; A[0][2]=A02; A[0][3]=A03;
 A[1][0]=A10; A[1][1]=A11; A[1][2]=A12; A[1][3]=A13;
 A[2][0]=A20; A[2][1]=A21; A[2][2]=A22; A[2][3]=A23;
@@ -101,47 +91,216 @@ B[1][0]=B10; B[1][1]=B11; B[1][2]=B12; B[1][3]=B13;
 B[2][0]=B20; B[2][1]=B21; B[2][2]=B22; B[2][3]=B23;
 B[3][0]=B30; B[3][1]=B31; B[3][2]=B32; B[3][3]=B33;
 
-// Reference multiplication
-for(i=0;i<4;i=i+1)
-for(j=0;j<4;j=j+1) begin
-    C_exp[i][j]=0;
-    for(k=0;k<4;k=k+1)
-        C_exp[i][j] = C_exp[i][j] + A[i][k]*B[k][j];
 end
+endtask
 
-#100;
+////////////////////////////////////////////////////////////
+// CHECK OUTPUT
+////////////////////////////////////////////////////////////
 
-$display("Output Matrix C:");
-$display("%d %d %d %d",C00,C01,C02,C03);
-$display("%d %d %d %d",C10,C11,C12,C13);
-$display("%d %d %d %d",C20,C21,C22,C23);
-$display("%d %d %d %d",C30,C31,C32,C33);
+task check_output;
+begin
 
-// Verification
-if(C00!=C_exp[0][0]) errors=errors+1;
-if(C01!=C_exp[0][1]) errors=errors+1;
-if(C02!=C_exp[0][2]) errors=errors+1;
-if(C03!=C_exp[0][3]) errors=errors+1;
+errors=0;
 
-if(C10!=C_exp[1][0]) errors=errors+1;
-if(C11!=C_exp[1][1]) errors=errors+1;
-if(C12!=C_exp[1][2]) errors=errors+1;
-if(C13!=C_exp[1][3]) errors=errors+1;
+// Row 0
+if(C00 != (A00*B00 + A01*B10 + A02*B20 + A03*B30)) errors=errors+1;
+if(C01 != (A00*B01 + A01*B11 + A02*B21 + A03*B31)) errors=errors+1;
+if(C02 != (A00*B02 + A01*B12 + A02*B22 + A03*B32)) errors=errors+1;
+if(C03 != (A00*B03 + A01*B13 + A02*B23 + A03*B33)) errors=errors+1;
 
-if(C20!=C_exp[2][0]) errors=errors+1;
-if(C21!=C_exp[2][1]) errors=errors+1;
-if(C22!=C_exp[2][2]) errors=errors+1;
-if(C23!=C_exp[2][3]) errors=errors+1;
+// Row 1
+if(C10 != (A10*B00 + A11*B10 + A12*B20 + A13*B30)) errors=errors+1;
+if(C11 != (A10*B01 + A11*B11 + A12*B21 + A13*B31)) errors=errors+1;
+if(C12 != (A10*B02 + A11*B12 + A12*B22 + A13*B32)) errors=errors+1;
+if(C13 != (A10*B03 + A11*B13 + A12*B23 + A13*B33)) errors=errors+1;
 
-if(C30!=C_exp[3][0]) errors=errors+1;
-if(C31!=C_exp[3][1]) errors=errors+1;
-if(C32!=C_exp[3][2]) errors=errors+1;
-if(C33!=C_exp[3][3]) errors=errors+1;
+// Row 2
+if(C20 != (A20*B00 + A21*B10 + A22*B20 + A23*B30)) errors=errors+1;
+if(C21 != (A20*B01 + A21*B11 + A22*B21 + A23*B31)) errors=errors+1;
+if(C22 != (A20*B02 + A21*B12 + A22*B22 + A23*B32)) errors=errors+1;
+if(C23 != (A20*B03 + A21*B13 + A22*B23 + A23*B33)) errors=errors+1;
+
+// Row 3
+if(C30 != (A30*B00 + A31*B10 + A32*B20 + A33*B30)) errors=errors+1;
+if(C31 != (A30*B01 + A31*B11 + A32*B21 + A33*B31)) errors=errors+1;
+if(C32 != (A30*B02 + A31*B12 + A32*B22 + A33*B32)) errors=errors+1;
+if(C33 != (A30*B03 + A31*B13 + A32*B23 + A33*B33)) errors=errors+1;
 
 if(errors==0)
-    $display("TEST PASSED");
+$display("TEST PASSED");
 else
-    $display("TEST FAILED with %d errors",errors);
+$display("TEST FAILED with %d errors",errors);
+
+end
+endtask
+
+////////////////////////////////////////////////////////////
+// TEST SEQUENCE
+////////////////////////////////////////////////////////////
+
+initial begin
+
+rst=1;
+#10 rst=0;
+
+////////////////////////////////////////////////////////////
+// TEST1 NORMAL MATRIX
+////////////////////////////////////////////////////////////
+
+A00=1;A01=0;A02=0;A03=4;
+A10=5;A11=6;A12=0;A13=0;
+A20=0;A21=1;A22=2;A23=3;
+A30=0;A31=5;A32=0;A33=0;
+
+B00=1;B01=2;B02=0;B03=0;
+B10=0;B11=6;B12=0;B13=8;
+B20=9;B21=0;B22=2;B23=0;
+B30=0;B31=5;B32=0;B33=7;
+
+store_matrices();
+
+#100;
+$display("TEST1 NORMAL MATRIX");
+check_output();
+
+////////////////////////////////////////////////////////////
+// TEST2 ZERO MATRIX
+////////////////////////////////////////////////////////////
+
+A00=0;A01=0;A02=0;A03=0;
+A10=0;A11=0;A12=0;A13=0;
+A20=0;A21=0;A22=0;A23=0;
+A30=0;A31=0;A32=0;A33=0;
+
+store_matrices();
+
+#100;
+$display("TEST2 ZERO MATRIX");
+check_output();
+
+////////////////////////////////////////////////////////////
+// TEST3 IDENTITY MATRIX
+////////////////////////////////////////////////////////////
+
+A00=1;A01=0;A02=0;A03=0;
+A10=0;A11=1;A12=0;A13=0;
+A20=0;A21=0;A22=1;A23=0;
+A30=0;A31=0;A32=0;A33=1;
+
+B00=1;B01=2;B02=3;B03=4;
+B10=5;B11=6;B12=7;B13=8;
+B20=9;B21=1;B22=2;B23=3;
+B30=4;B31=5;B32=6;B33=7;
+
+store_matrices();
+
+#100;
+$display("TEST3 IDENTITY MATRIX");
+check_output();
+
+////////////////////////////////////////////////////////////
+// TEST4 ALL ONES MATRIX
+////////////////////////////////////////////////////////////
+
+A00=1;A01=1;A02=1;A03=1;
+A10=1;A11=1;A12=1;A13=1;
+A20=1;A21=1;A22=1;A23=1;
+A30=1;A31=1;A32=1;A33=1;
+
+B00=1;B01=1;B02=1;B03=1;
+B10=1;B11=1;B12=1;B13=1;
+B20=1;B21=1;B22=1;B23=1;
+B30=1;B31=1;B32=1;B33=1;
+
+store_matrices();
+#100;
+$display("TEST4 ALL ONES MATRIX");
+check_output();
+
+//////////////////////////////////////////////////////
+// TEST 5 : UPPER TRIANGULAR MATRIX
+//////////////////////////////////////////////////////
+
+A00=1;A01=2;A02=3;A03=4;
+A10=0;A11=5;A12=6;A13=7;
+A20=0;A21=0;A22=8;A23=9;
+A30=0;A31=0;A32=0;A33=3;
+
+B00=2;B01=1;B02=0;B03=1;
+B10=3;B11=2;B12=1;B13=0;
+B20=4;B21=3;B22=2;B23=1;
+B30=5;B31=4;B32=3;B33=2;
+
+#1 store_matrices();
+
+#100;
+$display("TEST5 : UPPER TRIANGULAR MATRIX");
+check_output();
+
+//////////////////////////////////////////////////////
+// TEST 7 : LOWER TRIANGULAR MATRIX
+//////////////////////////////////////////////////////
+
+A00=1;A01=0;A02=0;A03=0;
+A10=2;A11=3;A12=0;A13=0;
+A20=4;A21=5;A22=6;A23=0;
+A30=7;A31=8;A32=9;A33=1;
+
+B00=1;B01=2;B02=3;B03=4;
+B10=5;B11=6;B12=7;B13=8;
+B20=9;B21=1;B22=2;B23=3;
+B30=4;B31=5;B32=6;B33=7;
+
+#1 store_matrices();
+
+#100;
+$display("TEST6 : LOWER TRIANGULAR MATRIX");
+check_output();
+
+//////////////////////////////////////////////////////
+// TEST 8 : DIAGONAL MATRIX
+//////////////////////////////////////////////////////
+
+A00=2;A01=0;A02=0;A03=0;
+A10=0;A11=3;A12=0;A13=0;
+A20=0;A21=0;A22=4;A23=0;
+A30=0;A31=0;A32=0;A33=5;
+
+B00=1;B01=2;B02=3;B03=4;
+B10=5;B11=6;B12=7;B13=8;
+B20=9;B21=1;B22=2;B23=3;
+B30=4;B31=5;B32=6;B33=7;
+
+#1 store_matrices();
+
+#100;
+$display("TEST4 : DIAGONAL MATRIX");
+check_output();
+////////////////////////////////////////////////////////////
+// TEST9 RANDOM MATRIX
+////////////////////////////////////////////////////////////
+
+for(i=0;i<4;i=i+1)
+for(j=0;j<4;j=j+1) begin
+A[i][j]=$urandom_range(0,10);
+B[i][j]=$urandom_range(0,10);
+end
+
+A00=A[0][0];A01=A[0][1];A02=A[0][2];A03=A[0][3];
+A10=A[1][0];A11=A[1][1];A12=A[1][2];A13=A[1][3];
+A20=A[2][0];A21=A[2][1];A22=A[2][2];A23=A[2][3];
+A30=A[3][0];A31=A[3][1];A32=A[3][2];A33=A[3][3];
+
+B00=B[0][0];B01=B[0][1];B02=B[0][2];B03=B[0][3];
+B10=B[1][0];B11=B[1][1];B12=B[1][2];B13=B[1][3];
+B20=B[2][0];B21=B[2][1];B22=B[2][2];B23=B[2][3];
+B30=B[3][0];B31=B[3][1];B32=B[3][2];B33=B[3][3];
+
+
+#100;
+$display("TEST5 RANDOM MATRIX");
+check_output();
 
 #50 $finish;
 
