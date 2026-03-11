@@ -1,88 +1,89 @@
 # Silicon-Sprint-SRM
 SILICON SPRINT 2026, a National Level Digital Design Contest, in association with the  Mindgrove Technologies, Chennai &amp; IEEE SRM Student Branch
 
-# 🚀 4×4 Systolic Array Matrix Multiplier (Verilog HDL)
+# 4×4 Systolic Array Matrix Multiplication using Verilog
 
-## 📌 Project Overview
+## Project Description
 
-This project implements a **4×4 Systolic Array architecture** for matrix multiplication using **Verilog HDL**. The design demonstrates parallel hardware computation using interconnected Processing Elements (PEs) that perform synchronized multiply–accumulate operations.
+This project implements a **4×4 systolic array** for matrix multiplication using Verilog HDL. The aim was to understand how parallel hardware architectures can speed up computation compared to sequential processing.
 
-The system multiplies two 4×4 matrices and produces a 4×4 output matrix using pipelined data flow, similar to architectures used in modern AI accelerators and digital signal processors.
+A systolic array works by passing data between small processing units in a synchronized manner. Each unit performs a multiply and accumulate operation, and together they compute the final matrix product.
+
+The design was simulated and verified using a self-checking testbench and later synthesized to obtain timing, area, and power reports.
 
 ---
 
-## 👥 Team Information
+## Team Information
 
-Team ID: 46
-**Question Number:** 02
+**Team ID:** SA-XXX
+**Question Number:** QX
 
-**Team Members**
+**Members**
 
-* Jithyaharini N
 * Keerthana G
+* Member 2
+* Member 3
 
 ---
 
-## 🎯 Design Objectives
+## Design Overview
 
-* Implement a hardware-based matrix multiplication engine
-* Design reusable Processing Elements (PE)
-* Build scalable systolic architecture
-* Verify correctness using a self-checking testbench
-* Perform synthesis and analyze timing, area, and power
+The system multiplies two 4×4 matrices:
 
----
+```
+C = A × B
+```
 
-## 🧠 Systolic Array Concept
+The architecture is built using multiple **Processing Elements (PEs)** connected in stages.
 
-A systolic array consists of multiple Processing Elements arranged in a grid where data flows rhythmically between neighbors.
+Each PE:
 
-### Key Characteristics
+* receives two inputs (`a` and `b`)
+* multiplies them
+* adds the result to a running partial sum
+* forwards the updated sum to the next stage
 
-* Parallel computation
-* Local data reuse
-* Pipeline execution
-* Deterministic timing
-
-Each clock cycle propagates operands across the array while partial sums accumulate progressively.
+To avoid unnecessary computation, multiplication happens only when both inputs are non-zero.
 
 ---
 
-## 🏗️ Architecture Description
+## Modules Used
 
-### Processing Element (PE)
+### 1. Processing Element (PE)
 
-Each PE performs:
+The PE is the basic building block of the design.
+It performs the multiply-accumulate operation on every clock cycle.
 
-* Multiply operation: `a × b`
-* Accumulation with incoming partial sum
-* Conditional computation enable logic
+Main operation:
 
 ```
 sum_out = sum_in + (a * b)
 ```
 
-Computation occurs only when inputs are non-zero to reduce unnecessary switching activity.
+---
+
+### 2. Systolic Array (4×4)
+
+The top module connects multiple PEs using Verilog `generate` loops.
+Each output element is calculated through four accumulation stages corresponding to matrix multiplication steps.
 
 ---
 
-### 4×4 Systolic Array
+### 3. Testbench
 
-The top module connects multiple PEs using Verilog `generate` loops:
+A self-checking testbench is implemented to verify correctness.
 
-* Rows correspond to matrix **A**
-* Columns correspond to matrix **B**
-* Pipeline stages perform accumulation
+The testbench:
 
-Matrix multiplication implemented:
-
-```
-C[i][j] = Σ A[i][k] × B[k][j]
-```
+* generates clock and reset
+* assigns matrix values
+* computes expected results internally
+* compares hardware output with reference values
+* displays **TEST PASSED** or mismatch messages automatically
 
 ---
 
-## 📂 Repository Structure
+## Folder Structure
 
 ```
 project/
@@ -95,129 +96,85 @@ project/
 │   └── tb.v
 │
 ├── synthesis_reports/
-│   ├── area.rpt
 │   ├── timing.rpt
+│   ├── area.rpt
 │   └── power.rpt
-│
-├── images/
-│   └── waveform.png
 │
 └── README.md
 ```
 
 ---
 
-## 🧪 Verification Methodology
+## Simulation Steps
 
-A **self-checking testbench** is implemented.
-
-### Features
-
-* Automatic clock generation
-* Reset sequencing
-* Reference matrix multiplication model
-* Expected output computation
-* Automatic mismatch detection
-* Pass/Fail reporting
-
-Simulation prints:
+Run simulation using Cadence Xcelium:
 
 ```
-TEST PASSED
+xrun -gui systolic_array_4x4.v tb.v
 ```
 
-when outputs match expected results.
+Waveforms can be viewed in SimVision.
 
 ---
 
-## ▶️ Running Simulation (Cadence Xcelium)
+## Synthesis Steps
 
-```bash
-xrun -gui rtl/systolic_array_4x4.v testbench/tb.v
+Run synthesis using Cadence Genus:
+
 ```
-
-Waveforms can be analyzed using **SimVision**.
-
----
-
-## ⚙️ Synthesis Flow (Cadence Genus)
-
-```bash
 genus -files synth.tcl
 ```
 
-Generated outputs:
+Generated outputs include:
 
-* Timing Report
-* Area Report
-* Power Report
-* Synthesized Netlist
-
----
-
-## 📊 Design Specifications
-
-| Parameter         | Value                     |
-| ----------------- | ------------------------- |
-| Architecture      | 4×4 Systolic Array        |
-| Data Width        | 8-bit inputs              |
-| Accumulator Width | 32-bit                    |
-| Operations        | Multiply-Accumulate (MAC) |
-| Clocked Design    | Yes                       |
-| Verification      | Self-checking testbench   |
+* Timing report
+* Area report
+* Power report
+* Synthesized netlist
 
 ---
 
-## 🚀 Key Features
+## Design Details
 
-* Parameterized PE-based architecture
-* Generate-loop hardware construction
-* Parallel matrix computation
-* Automatic verification
-* Hardware-efficient accumulation
-* Scalable design concept
-
----
-
-## 💡 Applications
-
-* Neural Network Accelerators
-* AI/ML Hardware Engines
-* Digital Signal Processing
-* Image Processing
-* Edge AI Systems
+| Feature           | Description             |
+| ----------------- | ----------------------- |
+| Array Size        | 4 × 4                   |
+| Input Width       | 8 bits                  |
+| Accumulator Width | 32 bits                 |
+| Operation         | Multiply and Accumulate |
+| Design Type       | Sequential (clocked)    |
 
 ---
 
-## 📈 Results
+## Observations
 
-The systolic architecture achieves:
-
-* High computational parallelism
-* Reduced control complexity
-* Predictable pipeline latency
-* Efficient hardware utilization
-
-Refer to synthesis reports for detailed metrics.
+* Parallel computation significantly reduces computation time.
+* Generate loops simplified hardware creation.
+* Self-checking testbench helped quickly verify correctness.
+* The systolic structure makes scaling to larger arrays possible.
 
 ---
 
-## 🛠 Tools Used
+## Applications
+
+* Neural network accelerators
+* DSP systems
+* Image processing hardware
+* AI inference engines
+
+---
+
+## Tools Used
 
 * Verilog HDL
 * Cadence Xcelium (Simulation)
 * Cadence Genus (Synthesis)
-* GitHub Version Control
+* GitHub
 
 ---
 
-## 📜 License
+## Conclusion
 
-This repository is created for academic and competition purposes.
+This project helped in understanding how matrix multiplication can be implemented efficiently in hardware using systolic architectures. It also provided practical experience with RTL design, verification, and synthesis flow used in VLSI design.
 
 ---
-
-## ✨ Acknowledgement
-
-This project demonstrates practical implementation of systolic computing architectures inspired by modern hardware accelerators used in AI processors.
-
