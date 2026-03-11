@@ -3,8 +3,7 @@ SILICON SPRINT 2026, a National Level Digital Design Contest, in association wit
 Team No: 46
 
 Problem Statement: Low-Power Systolic Array [R:2, V:3, S:4]
-Specification: Design a 4x4 INT8 Systolic Array for matrix multiplication that
-minimizes dynamic power consumption during periods of data sparsity.
+Specification: Design a 4x4 INT8 Systolic Array for matrix multiplication that minimizes dynamic power consumption during periods of data sparsity.
 
 Deliverables:
 R- RTL: Structural design of the PE grid and the localized control/data-steering logic.
