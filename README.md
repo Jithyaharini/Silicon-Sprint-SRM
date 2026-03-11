@@ -13,19 +13,6 @@ The design was simulated and verified using a self-checking testbench and later 
 
 ---
 
-## Team Information
-
-**Team ID:** SA-XXX
-**Question Number:** QX
-
-**Members**
-
-* Keerthana G
-* Member 2
-* Member 3
-
----
-
 ## Design Overview
 
 The system multiplies two 4×4 matrices:
