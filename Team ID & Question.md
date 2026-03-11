@@ -18,7 +18,7 @@ Specification: Design a 4x4 INT8 Systolic Array for matrix multiplication that m
 
 ---
 
-Deliverables:
+**Deliverables:**
 
 R- RTL: Structural design of the PE grid and the localized control/data-steering logic.
 
@@ -28,7 +28,10 @@ S- Synthesis: Power analysis comparing active vs. idle switching activity.
 
 ---
 
-SCORING FORMULA: (R × Dr) + (V × Dv) + (S × Ds) = Final Score / Max Score
+**SCORING FORMULA:**
+
+(R × Dr) + (V × Dv) + (S × Ds) = Final Score / Max Score
+
 (Dr, Dv, Ds)- Marks obtained by the team
 
 ---
