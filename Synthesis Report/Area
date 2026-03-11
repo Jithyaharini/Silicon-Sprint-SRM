@@ -12,4 +12,5 @@
      Instance       Module   Cell Count   Cell Area  Net Area   Total Area   Wireload  
 ------------------------------------------------------------------------------------
 systolic_array_4x4   11512   121525.590     0.000    121525.590     <none>     (D)  
+
 (D) = wireload is default in technology library
